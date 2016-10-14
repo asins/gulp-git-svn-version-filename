@@ -20,7 +20,8 @@ module.exports = (options) => {
 		type: 'git', // 默认使用git方式
 		user: '', // SVN中使用
 		pwd: '', // SVN中使用
-		formater: '{name}_{version}{ext}'
+		formater: '{name}_{version}{ext}',
+		callback: function(){} // 操作完成后执行
 	}, options);
 
 	stream._transform = (file, filetype, callback) => {
@@ -45,6 +46,9 @@ module.exports = (options) => {
 			var versionFilePath = Path.resolve(pathObj.dir, fileName);
 			logger(chalk.yellow(util.getRelativePath(file.path)), '->', chalk.green(util.getRelativePath(versionFilePath)));
 
+			if(util.type(options.callback) === 'function'){
+				options.callback(file.path, versionFilePath, file);
+			}
 			file.path = versionFilePath;
 			callback(null, file);
 		});
