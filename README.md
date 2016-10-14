@@ -18,9 +18,12 @@ npm i gulp-git-svn-version-filename
 gulpfile.js 中
 
 ```js
+var fileVer = require('gulp-git-svn-version-filename');
 gulp.task('addSvnVersion', function(){
 	return gulp.src(['./js/**/*.js', './css/**/*.css'])
-		.pipe(fileVer({type: 'svn'}))
+		.pipe(fileVer({type: 'svn', callback: function(oldPath, versionPath){
+			console.log(versionPath);
+		}}))
 		.pipe(gulp.dest('./build'))
 });
 ```
