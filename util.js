@@ -1,5 +1,6 @@
 
 var Path = require('path');
+var logger = require('fancy-log');
 var exec = require('./lib/exec');
 
 module.exports = {
