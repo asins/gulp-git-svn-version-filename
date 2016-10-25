@@ -36,7 +36,7 @@ module.exports = {
 
 		exec(svnCms, (err, out) => {
 			var match = /<commit\s+revision="(\d+)">/i.exec(out) || [];
-			var version = match[1];
+			var version = match[1] || 0;
 			if (!version) {
 				logger.error('[SVN] 获取Svn版本失败：' + path, out);
 			}
@@ -58,13 +58,14 @@ module.exports = {
 
 			if (out.length > 7) {
 				logger.error('[Git] 获取Git版本失败：' + out);
+				out = 0;
 			}
 			callback(out);
 		});
 	},
 
 	// 获取相对cwd的相对路径
-	getRelativePath: function (filePath) {
-		return Path.relative(process.cwd(), filePath);
+	getRelativePath: function (filePath, cwd) {
+		return Path.relative(cwd || process.cwd(), filePath);
 	}
 }
