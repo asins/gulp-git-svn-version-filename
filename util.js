@@ -1,6 +1,7 @@
 
 var Path = require('path');
 var logger = require('fancy-log');
+var chalk = require('chalk');
 var exec = require('./lib/exec');
 
 module.exports = {
@@ -38,7 +39,7 @@ module.exports = {
 			var match = /<commit\s+revision="(\d+)">/i.exec(out) || [];
 			var version = match[1] || 0;
 			if (!version) {
-				logger.error('[SVN] 获取Svn版本失败：' + path, out);
+				logger.error(chalk.red('[SVN] 获取版本失败：' + path));
 			}
 			callback(version);
 		});
@@ -54,13 +55,15 @@ module.exports = {
 			'--pretty="%h"', // 使用7位短hash方式, 完整hash请使用%H
 			'"' + path + '"',
 		];
-		exec(gitCms, function (out) {
 
-			if (out.length > 7) {
-				logger.error('[Git] 获取Git版本失败：' + out);
-				out = 0;
+		// logger('[Git]', gitCms.join(' '));
+		exec(gitCms, function (err, version) {
+			version = String(version).trim();
+			if (version.length !== 7) {
+				logger.error(chalk.red('[Git] 获取版本失败：'+ path));
+				version = 0;
 			}
-			callback(out);
+			callback(version);
 		});
 	},
 
