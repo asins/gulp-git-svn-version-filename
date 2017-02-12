@@ -11,7 +11,7 @@ var logger = require('fancy-log');
 var chalk = require('chalk');
 var util = require('./util');
 
-module.exports = (options) => {
+function getVersion(options) {
 	var stream = new Stream.Transform({
 		objectMode: true
 	});
@@ -30,7 +30,7 @@ module.exports = (options) => {
 
 		// logger(pathObj.dir, JSON.stringify(pathObj));
 		(options.type == 'svn' ? util.getSvnVersioon : util.getGitVersion)(file.path, {}, (version) => {
-			if(!version) callback(null, file);
+			if(!version)  return callback(null, file);
 
 			pathObj.version = version;
 
@@ -51,9 +51,12 @@ module.exports = (options) => {
 				options.callback(file.path, versionFilePath, file);
 			}
 			file.path = versionFilePath;
-			callback(null, file);
+			return callback(null, file);
 		});
 	};
 
 	return stream;
-}
+};
+
+exports.getVersion = getVersion;
+exports.getVersionMap = util.getVersionMap;
