@@ -11,9 +11,9 @@ var logger = require('fancy-log');
 var chalk = require('chalk');
 var util = require('./util');
 
-function getVersion(options) {
+function addVersion(options) {
 	var stream = new Stream.Transform({
-		objectMode: true
+		objectMode: true,
 	});
 
 	options = objectAssign({}, {
@@ -22,14 +22,14 @@ function getVersion(options) {
 		pwd: '', // SVN中使用
 		cwd: '', // 文件的相对目录
 		formater: '{name}_{version}{ext}',
-		callback: function(){} // 操作完成后执行
+		callback: function(){}, // 操作完成后执行
 	}, options);
 
 	stream._transform = (file, filetype, callback) => {
 		var pathObj = Path.parse(file.path);
 
 		// logger(pathObj.dir, JSON.stringify(pathObj));
-		(options.type == 'svn' ? util.getSvnVersioon : util.getGitVersion)(file.path, {}, (version) => {
+		(options.type == 'svn' ? util.getSvnVersioon : util.getGitVersion)(file.path, options, (version) => {
 			if(!version)  return callback(null, file);
 
 			pathObj.version = version;
@@ -58,5 +58,7 @@ function getVersion(options) {
 	return stream;
 };
 
-exports.getVersion = getVersion;
+exports.addVersion = addVersion;
 exports.getVersionMap = util.getVersionMap;
+exports.getSvnVersion = util.getSvnVersion;
+exports.getGitVersion = util.getGitVersion;

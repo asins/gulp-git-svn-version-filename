@@ -18,9 +18,14 @@ function type (obj) {
 
 // 获取SVN 版本号
 function getSvnVersion (path, opt, callback) {
-	if (!opt) opt = {};
+	if(type(opt) === 'function'){
+		callback = opt;
+		opt = {};
+	}else if (!opt){
+		opt = {};
+	}
 	if( type(versionMap[path]) !== 'undefined' ){
-		return callback(version);
+		return callback( versionMap[path] );
 	}
 
 	var svnCms = [
@@ -41,7 +46,7 @@ function getSvnVersion (path, opt, callback) {
 
 	exec(svnCms, (err, out) => {
 		var match = /<commit\s+revision="(\d+)">/i.exec(out) || [];
-		var version = match[1] || 0;
+		var version = match[1] || null;
 		if (!version) {
 			logger.error(chalk.red('[SVN] 获取版本失败：' + path));
 		}else{
@@ -52,10 +57,15 @@ function getSvnVersion (path, opt, callback) {
 }
 
 function getGitVersion (path, opt, callback) {
-	if (!opt) opt = {};
+	if(type(opt) === 'function'){
+		callback = opt;
+		opt = {};
+	}else if (!opt){
+		opt = {};
+	}
 
 	if( type(versionMap[path]) !== 'undefined' ){
-		return callback(version);
+		return callback( versionMap[path] );
 	}
 
 	var gitCms = [
@@ -67,11 +77,11 @@ function getGitVersion (path, opt, callback) {
 	];
 
 	// logger('[Git]', gitCms.join(' '));
-	exec(gitCms, function (err, version) {
+	exec(gitCms.join(' '), function (err, version) {
 		version = String(version).trim();
 		if (version.length !== 7) {
 			logger.error(chalk.red('[Git] 获取版本失败：'+ path));
-			version = 0;
+			version = null;
 		}else{
 			versionMap[path] = version;
 		}
