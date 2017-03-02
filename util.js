@@ -77,7 +77,7 @@ function getGitVersion (path, opt, callback) {
 	];
 
 	// logger('[Git]', gitCms.join(' '));
-	exec(gitCms.join(' '), function (err, version) {
+	exec(gitCms, function (err, version) {
 		version = String(version).trim();
 		if (version.length !== 7) {
 			logger.error(chalk.red('[Git] 获取版本失败：'+ path));

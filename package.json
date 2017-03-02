@@ -1,6 +1,6 @@
 {
   "name": "gulp-git-svn-version-filename",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "文件名中追加svn/git的对应文件版本号，要求传入文件的父层在svn/git仓库中",
   "repository": "asins/gulp-git-svn-version-filename",
   "main": "index.js",
