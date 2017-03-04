@@ -146,9 +146,12 @@ function cloneGitBaseRemote(url, callback){
  */
 function checkDotGit(callback){
 	exec('git log -1', function(err, out){
-		if(err) callback(err);
-		var isNotGitRepDir = out.indexOf('fatal: Not a git repository') > -1;
-		return callback(null, !isNotGitRepDir);
+		if(err && String(err).indexOf('fatal: Not a git repository') > -1){
+			return callback(null, false);
+		}else{
+			callback('[Git] checkDotGit: '+ err);
+		}
+		return callback(null, true);
 	});
 }
 
