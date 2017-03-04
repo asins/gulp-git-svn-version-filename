@@ -18,6 +18,7 @@ function addVersion(options) {
 
 	options = objectAssign({}, {
 		type: 'git', // 默认使用git方式
+		url: '', // 远程仓库地址
 		user: '', // SVN中使用
 		pwd: '', // SVN中使用
 		cwd: '', // 文件的相对目录
@@ -61,4 +62,5 @@ function addVersion(options) {
 exports.addVersion = addVersion;
 exports.getVersionMap = util.getVersionMap;
 exports.getSvnVersion = util.getSvnVersion;
-exports.getGitVersion = util.getGitVersion;
+exports.getGitVersion = util.getGitVersion
+exports.cloneGitBaseRemote = util.cloneGitBaseRemote;
