@@ -1,11 +1,11 @@
 
 var Path = require('path');
-var ChildProcess = require('child_process');
+var exec = require('child_process').exec;
 var logger = require('fancy-log');
 var chalk = require('chalk');
 
 var versionMap = {};
-var dotGitPath = './.git'; // .git目录路径
+var dotGitPath = Path.relative(process.cwd(), '.git'); //'./.git'; // .git目录路径
 
 /**
  * 获取变量类型
@@ -18,31 +18,6 @@ function type (obj) {
 }
 
 // 执行命令
-function exec(argsStr, callback) {
-	var cp = ChildProcess.exec(argsStr);
-	var out = '';
-	var err = '';
-	var done = false;
-	cp.stdout.on('data', function(data) {
-		out += data;
-	});
-	cp.stderr.on('data', function(data){
-		err += data;
-	});
-	cp.on('close', function(code) {
-		if (done) return;
-		done = true;
-		if(err) logger.error('[exec] Error: ' + err);
-
-		callback(err, out, code);
-	});
-	cp.on('error', function(err){
-		logger.error('[exec] Error: ' + err);
-		if (done) return;
-		done = true;
-		callback(err);
-	});
-}
 
 // 获取SVN 版本号
 function getSvnVersion (path, opt, callback) {
@@ -56,24 +31,24 @@ function getSvnVersion (path, opt, callback) {
 		return callback( versionMap[path] );
 	}
 
-	var svnCms = [
+	var cmdArgs = [
 		'svn',
 		'info',
 		'"' + path + '"',
 	];
-	if (opt.usr) svnCms.push('--username ' + opt.usr);
-	if (opt.pwd) svnCms.push('--password ' + opt.pwd);
+	if (opt.usr) cmdArgs.push('--username ' + opt.usr);
+	if (opt.pwd) cmdArgs.push('--password ' + opt.pwd);
 
-	// logger('[SVN]', svnCms.join(' '));
-	svnCms = svnCms.concat([
+	// logger('[SVN]', cmdArgs.join(' '));
+	cmdArgs = cmdArgs.concat([
 		'--xml',
 		'--non-interactive',
 		'--no-auth-cache',
 		'--trust-server-cert',
 	]);
 
-	exec(svnCms.join(' '), (err, out) => {
-		var match = /<commit\s+revision="(\d+)">/i.exec(out) || [];
+	exec(cmdArgs.join(' '), opt, function (err, stdout, stderr) {
+		var match = /<commit\s+revision="(\d+)">/i.exec(stdout) || [];
 		var version = match[1] || null;
 		if (!version) {
 			logger.error(chalk.red('[SVN] 获取版本失败：' + path));
@@ -81,7 +56,7 @@ function getSvnVersion (path, opt, callback) {
 			versionMap[path] = version;
 		}
 		callback(version);
-	});
+  });
 }
 
 function getGitVersion (path, opt, callback) {
@@ -96,16 +71,17 @@ function getGitVersion (path, opt, callback) {
 		return callback( versionMap[path] );
 	}
 
-	var gitCms = [
+	var cmdArgs = [
 		'git',
+		'--git-dir="' + dotGitPath +'"',
 		'log',
 		'-1',
 		'--pretty="%h"', // 使用7位短hash方式, 完整hash请使用%H
 		'"' + path + '"',
 	];
 
-	// logger('[Git]', gitCms.join(' '));
-	exec(gitCms.join(' '), function (err, version) {
+	logger('[Git]', cmdArgs.join(' '));
+	exec(cmdArgs.join(' '), opt, function (err, version, stderr) {
 		version = String(version).trim();
 		if (version.length !== 7) {
 			logger.error(chalk.red('[Git] 获取版本失败：' + path));
@@ -115,22 +91,22 @@ function getGitVersion (path, opt, callback) {
 		}
 		callback(version);
 	});
-
 }
 
-function cloneGitBaseRemote(url, callback){
+function cloneGitBaseRemote(url, branche, callback){
 	checkDotGit(function(err, isGitRepDir){
     	if(err){
 			return callback(err);
 		}
 
 		if(isGitRepDir){
+			logger(chalk.blue('[Git] .git仓库目录已经存在'));
 			return callback(null);
 		}
 
-        var cmdStr = `git clone -s --bare ${url} ${dotGitPath}`;
+        var cmdStr = `git clone -s --bare -b ${branche||'master'} ${url} ${dotGitPath}`;
 		logger(chalk.blue('[Git] clone远程分支到本地: ' + cmdStr));
-		exec(cmdStr, function(err, out){
+		exec(cmdStr, {}, function(err, out, stderr){
 			if (err) {
 				return callback(err);
 			}
@@ -145,13 +121,16 @@ function cloneGitBaseRemote(url, callback){
  * returns 是git仓库则返回true
  */
 function checkDotGit(callback){
-	exec('git log -1', function(err, out){
-		if(err && String(err).indexOf('fatal: Not a git repository') > -1){
-			return callback(null, false);
+	exec('git log -1', {}, function(err, out){
+		if(err){
+			if(String(err).indexOf('fatal: Not a git repository') > -1){
+				return callback(null, false);
+			} else {
+				return callback('[Git] checkDotGit: ' + err);
+			}
 		}else{
-			callback('[Git] checkDotGit: '+ err);
+			return callback(null, true);
 		}
-		return callback(null, true);
 	});
 }
 

@@ -6,7 +6,6 @@
 
 var Stream = require('stream');
 var Path = require('path');
-var objectAssign = require('object-assign');
 var logger = require('fancy-log');
 var chalk = require('chalk');
 var util = require('./util');
@@ -16,7 +15,7 @@ function addVersion(options) {
 		objectMode: true,
 	});
 
-	options = objectAssign({}, {
+	options = Object.assign({}, {
 		type: 'git', // 默认使用git方式
 		url: '', // 远程仓库地址
 		user: '', // SVN中使用
@@ -30,7 +29,7 @@ function addVersion(options) {
 		var pathObj = Path.parse(file.path);
 
 		// logger(pathObj.dir, JSON.stringify(pathObj));
-		(options.type == 'svn' ? util.getSvnVersioon : util.getGitVersion)(file.path, options, (version) => {
+		(options.type == 'svn' ? util.getSvnVersioon : util.getGitVersion)(util.getRelativePath(file.path, options.cwd), options, (version) => {
 			if(!version)  return callback(null, file);
 
 			pathObj.version = version;
