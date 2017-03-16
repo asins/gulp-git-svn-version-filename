@@ -80,7 +80,7 @@ function getGitVersion (path, opt, callback) {
 		'"' + path + '"',
 	];
 
-	logger('[Git]', cmdArgs.join(' '));
+	// logger('[Git]', cmdArgs.join(' '));
 	exec(cmdArgs.join(' '), opt, function (err, version, stderr) {
 		version = String(version).trim();
 		if (version.length !== 7) {
