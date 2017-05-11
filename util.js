@@ -3,6 +3,7 @@ var Path = require('path');
 var exec = require('child_process').exec;
 var logger = require('fancy-log');
 var chalk = require('chalk');
+var debug = require('debug')('gulp-git-svn-version-filename');
 
 var versionMap = {};
 var dotGitPath = Path.relative(process.cwd(), '.git'); //'./.git'; // .git目录路径
@@ -39,7 +40,7 @@ function getSvnVersion (path, opt, callback) {
 	if (opt.usr) cmdArgs.push('--username ' + opt.usr);
 	if (opt.pwd) cmdArgs.push('--password ' + opt.pwd);
 
-	// logger('[SVN]', cmdArgs.join(' '));
+	debug('[SVN]', cmdArgs.join(' '));
 	cmdArgs = cmdArgs.concat([
 		'--xml',
 		'--non-interactive',
@@ -55,7 +56,7 @@ function getSvnVersion (path, opt, callback) {
 		}else{
 			versionMap[path] = version;
 		}
-		callback(version);
+		callback && callback(version);
   });
 }
 
@@ -80,7 +81,7 @@ function getGitVersion (path, opt, callback) {
 		'"' + path + '"',
 	];
 
-	// logger('[Git]', cmdArgs.join(' '));
+	debug('[Git]', cmdArgs.join(' '));
 	exec(cmdArgs.join(' '), opt, function (err, version, stderr) {
 		version = String(version).trim();
 		if (version.length !== 7) {
@@ -89,7 +90,7 @@ function getGitVersion (path, opt, callback) {
 		} else {
 			versionMap[path] = version;
 		}
-		callback(version);
+		callback && callback(version);
 	});
 }
 

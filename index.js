@@ -8,6 +8,7 @@ var Stream = require('stream');
 var Path = require('path');
 var logger = require('fancy-log');
 var chalk = require('chalk');
+var debug = require('debug')('gulp-git-svn-version-filename');
 var util = require('./util');
 
 function addVersion(options) {
@@ -28,7 +29,6 @@ function addVersion(options) {
 	stream._transform = (file, filetype, callback) => {
 		var pathObj = Path.parse(file.path);
 
-		// logger(pathObj.dir, JSON.stringify(pathObj));
 		(options.type == 'svn' ? util.getSvnVersioon : util.getGitVersion)(util.getRelativePath(file.path, options.cwd), options, (version) => {
 			if(!version)  return callback(null, file);
 
