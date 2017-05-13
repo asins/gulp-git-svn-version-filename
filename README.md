@@ -77,18 +77,18 @@ gulpfile.js 中
 var FileVer = require('gulp-git-svn-version-filename');
 var cacheObj = {};
 var fileVer = new FileVer({
-	type: 'svn', // 仓库类型 支持svn、git
-	cache: cacheObj, // 指定缓存对象
-	cwd: process.cwd(), // 项目根目录
-	user: '', // 仓库账号名
-	pwd: '', // 仓库账号密码
+    type: 'svn', // 仓库类型 支持svn、git
+    cache: cacheObj, // 指定缓存对象
+    cwd: process.cwd(), // 项目根目录
+    user: '', // 仓库账号名
+    pwd: '', // 仓库账号密码
 });
 gulp.task('addSvnVersion', function(){
-	return gulp.src(['./js/**/*.js', './css/**/*.css'])
-		.pipe(fileVer.setForTransform(function(oldPath, versionPath){
-			console.log(versionPath, fileVer.getCache());
-		})
-		.pipe(gulp.dest('./build'))
+    return gulp.src(['./js/**/*.js', './css/**/*.css'])
+        .pipe(fileVer.setForTransform(function(oldPath, versionPath){
+            console.log(versionPath, fileVer.getCache());
+        })
+        .pipe(gulp.dest('./build'))
 });
 ```
 
