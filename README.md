@@ -55,7 +55,10 @@ var fileVer = new FileVer({
 - callback(version) {Function} 获取到信息后的回调方法
   - version {String} 为fullPath对应的版本号，当仓库中无版本号或获取失败时值为0
 
-### fileVer.formaterPath(fullPath, version)
+### fileVer.formaterPath(fullPath, version) 按照`this.formater`规则给fullPath加上version信息
+- fullPath {String} 要加版本号的文件路径
+- version {String} 待加入的版本号值
+- 返回结果：加入版本号信息后的文件路径
 
 ### fileVer.getForTransform(callback) 获取gulp(Transform方式)传入file的版本号信息
 
