@@ -46,7 +46,8 @@ var fileVer = new FileVer({
 - path: 待查文件路径
 - 返回结果：当传入path参数时只返回path的对应版本信息, 否则返回所有缓存信息Map 如：`{'/home/user/git/project/js/a.js': '34ae3'}`
 
-### fileVer.delCache 清除所有缓存信息
+### fileVer.delCache([path]) 删除缓存信息
+- path: 删除指定Key的缓存信息，如不传则删除所有缓存
 
 ### fileVer.get(fullPath, callback) 获取指定URL的版本信息
 
