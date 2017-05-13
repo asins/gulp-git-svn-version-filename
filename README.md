@@ -62,8 +62,9 @@ var fileVer = new FileVer({
 
 ### fileVer.getForTransform(callback) 获取gulp(Transform方式)传入file的版本号信息
 
-- callback(version) {Function} 获取到信息后的回调方法
+- callback(version, file) {Function} 获取到信息后的回调方法
   - version {String} 为fullPath对应的版本号，当仓库中无版本号或获取失败时值为null
+  - file 当前处理的文件对象
 
 ### fileVer.setForTransform(callback) 按formater给的规则设置gulp(TransForm方式)传入file的版本号
 - callback(oldFullFilePath, versionFullFilePath) 给`file.path`加完版本后的回调方法
