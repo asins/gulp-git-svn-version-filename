@@ -32,7 +32,7 @@ var fileVer = new FileVer({
 - pwd {String} 仓库账号密码 只支持SVN
 - cache {Boolean/Object} 是否缓存已查询版本信息
   - Boolean时：允许与否。注意：为true时使用的是全局缓存，所有引用共用一个缓存空间。
-  - Object时：值为缓存对象，必须为普通对象()。
+  - Object时：值为缓存对象，必须为普通对象(isPlainObject)。
 - formater {String/Function}
   - 值String时：文件名加版本号的规则（不提供目录结构修改） 默认值：'{name}_{version}{ext}'；
   - 值为Function(pathObj, this)时：pathObj为`pathObj. = Path.parse(path)`，并加入`version`信息，this指向fileVer。
