@@ -126,7 +126,7 @@ Versions.cloneGitBaseRemote = function(remoteUrl, branche, callback){
 
         var cmdStr = `git clone -s --bare -b ${branche||'master'} ${remoteUrl} ${dotGitPath}`;
 		logger(chalk.blue('[Git] clone远程分支到本地: ' + cmdStr));
-		exec(cmdStr, {}, function(err, out, stderr){
+		exec(cmdStr, function(err, out, stderr){
 			if (err) {
 				return callback(err);
 			}
@@ -264,7 +264,7 @@ function getGitVersion (path, opt, callback) {
  * returns 是git仓库则返回true
  */
 function checkDotGit(callback){
-	exec('git log -1', {}, function(err, out){
+	exec('git log -1', function(err, out){
 		if(err){
 			if(String(err).indexOf('fatal: Not a git repository') > -1){
 				return callback(null, false);
