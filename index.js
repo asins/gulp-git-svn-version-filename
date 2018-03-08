@@ -266,7 +266,7 @@ function getGitVersion (path, opt, callback) {
 function checkDotGit(callback){
 	exec('git log -1', function(err, out){
 		if(err){
-			if(String(err).indexOf('fatal: Not a git repository') > -1){
+      if(String(err).indexOf('fatal:') > -1 || String(err).indexOf('错误:') > -1){
 				return callback(null, false);
 			} else {
 				return callback('[Git] checkDotGit: ' + err);
