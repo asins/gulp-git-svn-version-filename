@@ -248,8 +248,8 @@ function getGitVersion (path, opt, callback) {
 
 	debug('[Git]', cmdArgs.join(' '));
 	exec(cmdArgs.join(' '), function (err, version, stderr) {
-		version = String(version).trim();
-		if (version.length !== 7) {
+		version = String(version).trim().slice(0, 8); // 只取前8位
+    if (!version.length) {
 			logger.error(chalk.red('[Git] 获取版本失败：' + path));
 			version = null;
 		}else if(opt.cache !== false){
